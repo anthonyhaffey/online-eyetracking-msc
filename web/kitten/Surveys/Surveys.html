@@ -207,6 +207,9 @@ function create_survey_HoT(this_survey){
 
 function list_surveys(){
   $("#survey_select").empty();
+  $("#survey_select").append("<option disabled>Select a survey</option>");
+  $("#survey_select").val("Select a survey");
+    
   if(typeof(master_json.surveys) == "undefined" ||
     typeof(master_json.surveys.user_surveys) == "undefined"){
     master_json.surveys = {

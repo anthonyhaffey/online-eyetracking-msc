@@ -175,6 +175,8 @@ function list_trialtypes(){
   function process_returned(returned_data){
     
     $("#trial_type_select").empty();
+    $("#trial_type_select").append("<option disabled>Select a trialtype</option>");
+    $("#trial_type_select").val("Select a trialtype");
     
     default_trialtypes = JSON.parse(returned_data);
 		user_trialtypes 	 = master_json.trialtypes.user_trialtypes;
