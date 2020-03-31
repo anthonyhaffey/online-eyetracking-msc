@@ -678,31 +678,6 @@ function parse_sheets(){
   
   switch(Study.get_vars.platform){
     case "localhost":
-      eel.expose(python_stim_load);
-      function python_stim_load(stim_sheet_content){
-        console.dir(stim_sheet_content);
-        exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(stim_sheet_content));
-        proc_stim_loaded[0] = "stimuli";
-        if(proc_stim_loaded.join("-") == "stimuli-procedure"){
-          Study.activate_pipe();
-        }
-      }
-      
-      eel.expose(python_proc_load);
-      function python_proc_load(proc_sheet_content){
-        console.dir(proc_sheet_content);
-        exp_json.parsed_proc = collectorPapaParsed(proc_sheet_content);
-        proc_stim_loaded[1] = "procedure";
-        if(proc_stim_loaded.join("-") == "stimuli-procedure"){
-          Study.activate_pipe();
-        }
-      }
-    
-      eel.load_stimuli(Study.get_vars.location,
-                       stim_sheet_name);
-      eel.load_procedure(Study.get_vars.location,
-                         proc_sheet_name);
-      break;
     case "preview":
     case "github":
       var proc_url = "../User/Experiments/" + 
