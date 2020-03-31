@@ -36,6 +36,34 @@ def load_master_json():
         eel.load_master_json(master_json)
 
 @eel.expose
+def load_stimuli(experiment,
+                 stimuli_file):
+    try:
+        stimuli_csv = open("web/User/Experiments/" + 
+                                        experiment +
+                                        "/" +
+                                        stimuli_file, "r")
+        stimuli_csv = stimuli_csv.read()
+    except:
+        stimuli_csv = ""
+    finally:
+        eel.python_stim_load(stimuli_csv)
+
+@eel.expose
+def load_procedure(experiment,
+                   procedure_file):
+    try:
+        procedure_csv = open("web/User/Experiments/" + 
+                                        experiment +
+                                        "/" +
+                                        procedure_file, "r")
+        procedure_csv = procedure_csv.read()
+    except:
+        procedure_csv = ""
+    finally:
+        eel.python_proc_load(procedure_csv)
+
+@eel.expose
 def load_trialtype(trialtype):
     try:
         trialtype_html = open("web/User/Trialtypes/" + trialtype, "r")
