@@ -686,20 +686,44 @@ function sendData() {
   switch(parent.parent.dev_obj.context){
     case "localhost":
       data.forEach(function(trial,trial_no){
-        console.dir("trial");
-        console.dir(trial);
         if (trial !== null){
           parent.parent.eel.save_data(parent.parent.Study.get_vars.location,
                         parent.parent.$("#participant_code").val(),
                         "freeviewing-" + trial_no,
                         Papa.unparse(data[trial_no].raw))
+           parent.parent.online_save(parent.parent.Study.get_vars.location,
+                    parent.parent.$("#participant_code").val() + "-trial-" + trial_no,
+                    parent.parent.$("#completion_code").val(),
+                    parent.parent.$("#prehashed_code").val(),  
+                    Papa.unparse(data[trial_no].raw),          //the data
+          parent.parent.exp_json.save_script,
+          function(){
+            parent.parent.online_data_obj.saves_ended ++;
+          });
           data[trial_no] = null;
         }
       });
       
       
+      
       break;
-    case "":  
+    case "github":
+      data.forEach(function(trial,trial_no){
+        if (trial !== null){
+                   parent.parent.online_save(parent.parent.Study.get_vars.location,
+                    parent.parent.$("#participant_code").val() + "-trial-" + trial_no,
+                    parent.parent.$("#completion_code").val(),
+                    parent.parent.$("#prehashed_code").val(),  
+                    Papa.unparse(data[trial_no].raw),          //the data
+          parent.parent.exp_json.save_script,
+          function(){
+            parent.parent.online_data_obj.saves_ended ++;
+          });
+          data[trial_no] = null;
+        }
+      });
+      
+      
       break;
   }
   /*
