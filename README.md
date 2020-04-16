@@ -1,9 +1,12 @@
-# open-collector
+# open-collector-eye-tracking
 
 ## Getting started
 
+## Guidance on eye-tracking
 
-# Collector
+Will go here
+
+# Guidance on Collector Generally
 A program for running experiments on the web
 Copyright 2012-2015 Mikey Garcia & Nate Kornell
 
