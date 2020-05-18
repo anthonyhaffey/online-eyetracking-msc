@@ -58,16 +58,18 @@ trialtypes_obj = {
     
 		var trialtype = master_json.trialtypes.trialtype;
     
-    eel.expose(python_trialtype);
-    function python_trialtype(content){
-      console.dir("content");
-      console.dir(content);
-      if(content == ""){
-        content = master_json.trialtypes[user_default+"s"][trialtype];
-      }
-      editor.setValue(content);
-    }
-
+		if(typeof(eel) !== "undefined"){
+			eel.expose(python_trialtype);
+			function python_trialtype(content){
+				console.dir("content");
+				console.dir(content);
+				if(content == ""){
+					content = master_json.trialtypes[user_default+"s"][trialtype];
+				}
+				editor.setValue(content);
+			}
+		}
+		
     //python load if localhost
     switch(dev_obj.context){
       case "localhost":
@@ -90,6 +92,7 @@ trialtypes_obj = {
 		if(new_name == original_name){
 			bootbox.alert("Your suggested new name is the same as the original name");
 		} else {
+			/*
 			$.post("Studies/TrialTypeEditor/AjaxTrialtypes.php",{
 				action 				: "rename",
 				original_name	: original_name,
@@ -110,6 +113,7 @@ trialtypes_obj = {
 					};
 				}
 			});
+			*/
 		}
 	},
 	save_trialtype:function(content,
@@ -148,7 +152,9 @@ trialtypes_obj = {
 			bootbox.alert("error: "+error.error+"<br> try saving again after waiting a little");
 		},
 		"filesUpload");
-    eel.save_trialtype(name.toLowerCase().replace(".html","") + ".html",content);
+		if(typeof(eel) !== "undefined"){
+			eel.save_trialtype(name.toLowerCase().replace(".html","") + ".html",content);
+		}
 	},
 	synchTrialtypesFolder:function(){
 		if(dropbox_check()){
@@ -197,15 +203,7 @@ function list_trialtypes(){
 		trialtypes_obj.synchTrialtypesFolder();
   }
   switch(dev_obj.context){
-    case "server":
-      $.post("Studies/TrialTypeEditor/AjaxTrialtypes.php",
-      {
-        action:'initiate',
-      },
-      function(returned_data){
-        process_returned(returned_data)
-      });
-      break;
+    case "server":      
     case "gitpod":
     case "github":
 		case "localhost":

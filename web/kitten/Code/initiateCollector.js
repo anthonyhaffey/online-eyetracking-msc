@@ -125,9 +125,12 @@ function custom_alert(msg,duration) {
 
 
 function detect_context(){
-  var dropbox_developer = false;                                                 //turn to false to make use of eel and python
+  
+  
+  //turn to false to make use of eel and python
   if(document.URL.indexOf("localhost") !== -1){
-    if(dropbox_developer){
+    if(typeof(parent.dropbox_developer) !== "undefined" &&
+              parent.dropbox_developer  ==  true){
       return "github";
     } else {
       return "localhost";
@@ -149,24 +152,7 @@ function detect_version(){
 //detect if this is local or github or ocollector.org
 function initiate_collector(){
   dev_obj.context = detect_context();
-  switch(dev_obj.context){
-    case "server":
-      $.post("Code/InitiateCollector.php",{
-				//nothing to post, just want to run it.
-      },function(local_key){
-				$("#login_div").show();
-        if(local_key !== "no-key"){
-          window.localStorage.setItem("local_key",local_key);
-        }
-      });
-      break;
-    case "github":
-    case "gitpod":
-    case "localhost":
-      $("#logged_in").show();
-      $("#option_Studies").click();
-      break;
-  }
+	$("#option_Studies").click();  
 }
 
 function list_variables(trialtype){
@@ -212,5 +198,4 @@ String.prototype.replaceAll = function(str1, str2, ignore) //by qwerty at https:
 {
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
-
 initiate_collector();

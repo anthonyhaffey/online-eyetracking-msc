@@ -17,12 +17,17 @@
 
 		Kitten release (2019-2020) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
 */
+$("#default_experiments_select").on("change",function(){
+	if($("#default_experiments_select").val() !== "Select an experiment"){
+		$("#upload_default_exp_btn").attr("disabled",false);
+	}
+});
 $("#delete_exp_btn").on("click",function(){
 	var exp_name = $("#experiment_list").val();
 	if(exp_name == null){
 		bootbox.alert("You need to select a study to delete it");
 	} else {
-		bootbox.confirm("Are you sure you want to delete your experiment? <br><br> If you delete it you can go to your <a href='https://www.dropbox.com/home/Apps/Open-Collector' target='blank'>dropbox folder</a> to look up previous versions of your study.", function(result) {
+		bootbox.confirm("Are you sure you want to delete your experiment? <br><br> If you delete it you can go to your <a href='https://www.dropbox.com/home/Apps/Collector-SOS' target='blank'>dropbox folder</a> to look up previous versions of your study.", function(result) {
 			if(result){
 				//delete from master_json
 				delete (master_json.exp_mgmt.experiments[exp_name]);
@@ -30,10 +35,13 @@ $("#delete_exp_btn").on("click",function(){
 					dbx.filesDelete({path:"/experiments/"+exp_name+".json"})
 						.then(function(response) {
 							$('#experiment_list option:contains('+ exp_name +')')[0].remove();
-							$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+							if(document.getElementById('experiment_list').options[0] !== undefined){
+								$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+							}
 							master_json.exp_mgmt.experiment = $("#experiment_list").val();
 							custom_alert(exp_name +" succesfully deleted");
 							update_master_json();
+							$("#save_btn").click();
 							update_handsontables();
 						})
 						.catch(function(error) {
@@ -83,7 +91,7 @@ $("#new_experiment_button").on("click",function(){
 	});
 });
 $("#new_proc_button").on("click",function(){
-  var proc_template = new_experiment_data["Procedure"]["Procedure_1"];
+  var proc_template = new_experiment_data.all_procs["procedure_1.csv"];
 	bootbox.prompt("What would you like the name of the new procedure sheet to be?",function(new_proc_name){
 		var experiment = master_json.exp_mgmt.experiment;
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
@@ -103,7 +111,7 @@ $("#new_proc_button").on("click",function(){
 	});
 });
 $("#new_stim_button").on("click",function(){
-	var stim_template = new_experiment_data["Stimuli"]["Stimuli.csv"];
+	var stim_template = new_experiment_data.all_stims["stimuli_1.csv"];
 	bootbox.prompt("What would you like the name of the new <b>Stimuli</b> sheet to be?",function(new_sheet_name){
 		var experiment = master_json.exp_mgmt.experiment;
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
@@ -151,15 +159,9 @@ $("#rename_exp_btn").on("click",function(){
       if(typeof(dbx) !== "undefined"){
         dbx.filesMove({from_path:"/Experiments/"+original_name+".json",to_path:"/Experiments/"+new_name+".json"})
           .then(function(result){
-            $.post("Studies/AjaxMySQL.php",{
-              action:"rename",
-              original_name:original_name,
-              new_name:new_name
-            }, function(returned_result){
-              update_master_json();
-              list_experiments();
-              $("#experiment_list").val(new_name);
-            });
+						update_master_json();
+						list_experiments();
+						$("#experiment_list").val(new_name);					
           })
           .catch(function(error){
             report_error(error);
@@ -236,13 +238,23 @@ $("#run_btn").on("click",function(){
 	var experiment = master_json.exp_mgmt.experiment;
 	var exp_json = master_json.exp_mgmt.experiments[experiment];
 	var select_html = '<select id="select_condition" class="custom-select">';
+	if(typeof(exp_json.conditions) == "undefined"){
+		exp_json.conditions = collectorPapaParsed(exp_json.cond_array);
+		exp_json.conditions = exp_json.conditions.filter(function(condition){
+			return condition.name !== "";
+		});
+	}
 	exp_json.conditions.forEach(function(condition){
 		select_html += "<option>" + condition.name + "</option>";
 	});
 	select_html += "</select>";
+  
+  
 
+  
 	switch(dev_obj.context){
 		case "github":
+		case "server":
 		bootbox.dialog({
 			title:"Select a Condition",
 				message: "Which condition would you like to run? <br><br>" + select_html,
@@ -253,11 +265,10 @@ $("#run_btn").on("click",function(){
 						callback: function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
-							var github_url =  "https://open-collector.github.io/open-collector/web/"+
-																dev_obj.version +
-																"/";
+							var this_url = window.location.href.split("/" + dev_obj.version)[0] + 
+																												"/" + dev_obj.version + "/";
 
-							window.open(github_url  + "RunStudy.html?platform=github&" +
+							window.open(this_url  	+ "RunStudy.html?platform=github&" +
 													"location=" + master_json.exp_mgmt.experiment + "&" +
 													"name="     + master_json.exp_mgmt.exp_condition + "&" +
 													"dropbox="  + exp_json.location,"_blank");
@@ -269,23 +280,31 @@ $("#run_btn").on("click",function(){
 						callback: function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
-							var github_url =  "https://open-collector.github.io/open-collector/web/"+
-																dev_obj.version +
+							var this_url = window.location.href.split("/" + dev_obj.version)[0] + 
+																												"/" + dev_obj.version + "/";
 																"/";
-							window.open(github_url  + "RunStudy.html?platform=preview&" +
+							window.open(this_url  	+ "RunStudy.html?platform=preview&" +
 													"location=" + master_json.exp_mgmt.experiment + "&" +
 													"name="     + master_json.exp_mgmt.exp_condition + "&" +
 													"dropbox="  + exp_json.location,"_blank");
 
 						}
 					},
-					cancel: {
+					publish: {
+						label: "Publish",
+						className: 'btn-primary',
+						callback: function(){
+							update_server_table();
+              $("#login_modal").fadeIn();
+						}
+					},
+          cancel: {
 						label: "Cancel",
 						className: 'btn-secondary',
 						callback: function(){
 							//nada;
 						}
-					}
+          }
 				}
 			});
 			break;
@@ -388,11 +407,13 @@ $("#save_btn").on("click", function(){
 		 typeof(master_json.keys.public_key) == "undefined"){
 			 encrypt_obj.generate_keys();
 	}
+  
 	var experiment 						= master_json.exp_mgmt.experiment;
   var this_exp 							= master_json.exp_mgmt.experiments[experiment];
+  
+  if(typeof(this_exp) !== "undefined"){
       this_exp.public_key   = master_json.keys.public_key;
-      this_exp.save_script 	= master_json.data.save_script;
-
+  }
 	//parse procs for survey saving next
 	if($("#experiment_list").val() !== null) {
     this_exp.parsed_procs = {};
@@ -541,44 +562,14 @@ $("#save_btn").on("click", function(){
           dbx.sharingCreateSharedLink({path:returned_data.path_lower})
             .then(function(returned_link){
               this_exp.location = returned_link.url;
-
-              // if this is the experiment
-              switch(dev_obj.context){
-                case "github":
-                  dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
-                      custom_alert("experiment_location sorted");
-                      $("#run_link").attr("href","../"+ dev_obj.version + "/RunStudy.html?location="+this_exp.location);
-                      update_master_json();
-                    },function(error){
-                      custom_alert("check console for error saving location");
-                      bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
-                    },
-                    "filesUpload");
-                  break;
-                case "server":
-                  $.post("AjaxExperimentLocation.php",
-                    {
-                      location:   this_exp.location,
-                      experiment: experiment
-                    },
-                    function(returned_data){
-                      custom_alert(returned_data);
-
-                      dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
-                        custom_alert("experiment_location sorted");
-                        $("#run_link").attr("href","../"+ master_json.exp_mgmt.version + "/RunStudy.html?location="+this_exp.location);
-                        update_master_json();
-                      },function(error){
-                        custom_alert("check console for error saving location");
-                        bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
-                      },
-                      "filesUpload");
-                    }
-                  );
-                  break;
-              }
-
-
+							dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
+									$("#run_link").attr("href","../"+ master_json.exp_mgmt.version + "/RunStudy.html?location="+this_exp.location);
+									update_master_json();
+								},function(error){
+									custom_alert("check console for error saving location");
+									bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
+								},
+								"filesUpload");              
             })
             .catch(function(error){
               report_error(error);
@@ -589,6 +580,8 @@ $("#save_btn").on("click", function(){
         },
         "filesUpload");
     }
+  } else {
+    update_master_json();
   }
   if(dev_obj.context == "localhost"){
     eel.save_master_json(master_json);
@@ -601,11 +594,6 @@ $("#stim_select").on("change",function(){
 });
 
 
-$("#default_experiments_select").on("change",function(){
-	if($("#default_experiments_select").val() !== "Select an experiment"){
-		$("#upload_default_exp_btn").attr("disabled",false);
-	}
-});
 $("#upload_default_exp_btn").on("click",function(){
 	var default_experiment_name = $("#default_experiments_select").val();
 	if(default_experiment_name !== "Select an experiment"){
@@ -635,7 +623,7 @@ $("#versions_btn").on("click",function(){
 		bootbox.alert("If you login a dropbox account, it'll automatically backup your experiment files");
 	} else {
 		experiment = master_json.exp_mgmt.experiment;
-		var version_address = "https://www.dropbox.com/history/Apps/Open-Collector/experiments/"+experiment+".json?_subject_uid="+ $_GET.uid +"&undelete=1";
+		var version_address = "https://www.dropbox.com/history/Apps/Collector-SOS/experiments/"+experiment+".json?_subject_uid="+ $_GET.uid +"&undelete=1";
 
 		$("#synch_btn").on("click",function(){
 			alert("hi there");

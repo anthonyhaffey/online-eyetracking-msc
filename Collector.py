@@ -311,8 +311,6 @@ def new_user(username):
         eel.python_bootbox("User: <b>" + username + "</b> created")
 
 
-# Code that (hopefully) can be deleted
-## effectively deleted
 @eel.expose
 def load_master_json():
     #check if the uber mega file exists yet
@@ -363,5 +361,5 @@ for proc in process_iter():
             proc.send_signal(SIGKILL)
             continue
 '''
-eel.start('kitten/index.html', port=8000)
+eel.start('kitten/index_local.html', port=8000)
 

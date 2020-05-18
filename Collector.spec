@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['Collector.py'],
-             pathex=['D:\\github\\online-eyetracking-msc'],
+             pathex=['D:\\github\\anthonyhaffey\\online-eyetracking-msc'],
              binaries=[],
              datas=[('C:\\Users\\antho\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python38\\site-packages\\eel\\eel.js', 'eel'), ('web', 'web')],
              hiddenimports=['bottle_websocket'],

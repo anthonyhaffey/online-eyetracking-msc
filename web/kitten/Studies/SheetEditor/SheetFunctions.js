@@ -130,12 +130,13 @@ function list_experiments(){
         remove_from_list("Select a dropbox experiment");
         first_load = false;
       }
-      master_json.exp_mgmt.experiment = this.value;
-
-      exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
-      clean_conditions();
-      $("#dropbox_inputs").show();
-      update_handsontables();
+			master_json.exp_mgmt.experiment = this.value;
+			exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+			clean_conditions();
+			$("#dropbox_inputs").show();
+			update_handsontables();
+			update_server_table();
+			$("#save_btn").click();
     });
   }
 	//do longer synch with dropbox if the user is using dropbox
@@ -193,24 +194,11 @@ function new_experiment(experiment){
           .then(function(returned_link){
             switch(dev_obj.context){
               case "server":
-                $.post(
-                  "Studies/AjaxMySQL.php",
-                  {
-                    action: "new",
-                    experiment: experiment,
-                    location:returned_link.url
-                  },
-                  function(returned_data){
-                    update_experiment_list(experiment);
-                  }
-                );
-                break;
-                case "gitpod":
-                case "github":
-                  update_experiment_list(experiment);
-                  break;
+							case "gitpod":
+							case "github":
+								update_experiment_list(experiment);
+								break;
             }
-
           })
           .catch(function(error){
             report_error(error,"new_experiment trying to share link");
@@ -245,6 +233,7 @@ function renderItems() {
   list_surveys();
 	list_trialtypes();
 	list_graphics();
+  list_servers();
 
 	var published_list = dev_obj.published_links;
 	master_json.exp_mgmt.published_ids = {};
@@ -449,12 +438,9 @@ function upload_exp_contents(these_contents,this_filename){
 		master_json.exp_mgmt.experiment = exp_name;
 		master_json.exp_mgmt.experiments[exp_name] = this_content;
 		list_experiments();
-    $("#experiment_list").val(exp_name);
-    $("#experiment_list").change();
-
-		upload_trialtypes(this_content);
+    upload_trialtypes(this_content);
     upload_surveys(this_content);
-    list_surveys();
+    list_surveys();		
 	}
   function upload_surveys(this_content){
     function unique_survey(suggested_name,survey_content){
@@ -513,19 +499,22 @@ function upload_exp_contents(these_contents,this_filename){
                 unique_experiment(new_name,content);
               } else {
                 upload_to_master_json(exp_name,parsed_contents);
+								$("#save_btn").click();
               }
             });
           } else {
+            master_json.exp_mgmt.experiment = suggested_name;
             master_json.exp_mgmt.experiments[suggested_name] = content;
             list_experiments();
+            $("#upload_experiment_modal").hide();
             upload_to_master_json(exp_name,parsed_contents);
+						$("#save_btn").click();
           }
         }
         unique_experiment(exp_name,parsed_contents);
-        $("#save_btn").click();
-
       } else {
         upload_to_master_json(exp_name,parsed_contents);
+				$("#save_btn").click();
       }
 		}
 	});

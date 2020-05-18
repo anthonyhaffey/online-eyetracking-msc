@@ -20,30 +20,66 @@ function online_save(experiment_id,
                      completion_code,
                      prehashed_code,
                      encrypted_data,
-                     save_script_url,
-                     after_function){
-
+                     data_scripts,
+                     after_function,
+										 trial_all,
+										 trial_no){
+	if(typeof(trial_all) == "undefined"){
+		trial_all = "all";
+	}
+	if(typeof(trial_no) == "undefined"){
+		trial_no = "_all_data";
+	}
+	
   data = {
-    completion_code: completion_code,
-    encrypted_data:  encrypted_data,
-    experiment_id:   experiment_id,
-    participant_id:  participant_id,
-    prehashed_code:  prehashed_code
+    completion_code:  completion_code,
+    encrypted_data:   encrypted_data,
+    experiment_id:    experiment_id,
+    participant_id:   participant_id,
+    prehashed_code:   prehashed_code,
+		dropbox_location: exp_json.location,
+		trial_all:        trial_all,
+		trial_no:         trial_no,
   };
-  $.ajax({
-    type: 'POST',
-    url: save_script_url, //"https://script.google.com/macros/s/AKfycbyuUWN7Jc1j62OuUh1JrJFuHn7e2VXLZdZ9FJs4dvwX_D6JI7M7/exec",
-    data: data,
-    crossDomain: true,
-    timeout: 120000,
-    success:function(result){
-      //as it stands, this will never happen as Collector doesn't allow posts to it.
-      after_function();
-    }
-  })
-  .catch(function(error){
-    after_function();
-  });
+	
+	
+	//work your way through all the save scripts
+	function until_successful_script(script_list,
+																	 data,
+																	 after_function){
+		if(script_list.length > 0){
+			var save_script_url = script_list.shift();
+			
+			console.dir("save_script_url");
+			console.dir(save_script_url);
+			
+			$.ajax({
+				type: 'POST',
+				url: save_script_url,
+				data: data,
+				crossDomain: true,
+				timeout: 120000,
+				success:function(result){
+					after_function(result);
+				}
+			})
+			.catch(function(error){
+				until_successful_script(script_list,																	
+																data,
+																after_function);
+			});
+		} else {
+			after_function();
+		}			
+	}
+	var script_list = [];
+	Object.keys(data_scripts).forEach(function(server){
+		script_list.push(data_scripts[server]);
+	});
+	until_successful_script(script_list,
+													data,
+													after_function);
+
 }
 
 

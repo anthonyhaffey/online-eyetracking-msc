@@ -1,0 +1,4 @@
+post_0_trial_start_ms,item,max_time,shuffle_1,text,trial type,post_0_trial_end_ms,post_0_rt_ms,post_0_trial_end_date,participant_browser,max time,shuffle 1,,repeat,cue,answer
+,,,,,,,,,,,,,,,
+1587066895242,0,,off,,start_experiment,1587066899998,4756,Thu Apr 16 2020 20:54:59 GMT+0100 (British Summer Time),chrome,,,,,,
+1587066900003,2,,,This is the start of a new experiment.,instruct,1587066900773,770,Thu Apr 16 2020 20:55:00 GMT+0100 (British Summer Time),chrome,user,off,,,A,Apple

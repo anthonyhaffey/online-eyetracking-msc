@@ -1,3 +1,5 @@
 Item,Trial Type,Max Time,Text,Shuffle 1,calibrations,freeview_image_file,design_type,calibration_skip,image_height,
-2 to 3,webgazer,user,This is the start of a new experiment.,off,5,freeview_stimuli.csv,freeview,no,50%,
+0,instruct,user,"If you have been drinking alcohol, taking recreational drugs or gambled within the last 24 hours, please wait until it's been 24 hours since you last partook in any of these activities before proceeding. Don't worry about restarting the experiment, you can close the window and resume from here or restart from scratch when you're ready.",off,,,,,,
+2 to 3,webgazer,user,This is the start of a new experiment.,trials,5,freeview_stimuli.csv,freeview,no,50%,
+0,instruct,user,https://forms.office.com/Pages/ResponsePage.aspx?id=xDv6T_zswEiQgPXkP_kOX4iwBGRO5-NFl2OBto3gpIBUQzlWSUtMT1cyNFJXQVUyM0VVQ1pBWU0zWS4u,off,,,,,,
 ,,,,,,,,,,
