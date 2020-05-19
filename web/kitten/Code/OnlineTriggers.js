@@ -24,6 +24,9 @@ function online_save(experiment_id,
                      after_function,
 										 trial_all,
 										 trial_no){
+                       
+  console.dir("data_scripts");
+  console.dir(data_scripts);
 	if(typeof(trial_all) == "undefined"){
 		trial_all = "all";
 	}
