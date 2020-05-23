@@ -21,7 +21,7 @@ if os.path.isdir("../Collector-update"):
 
 #Download open-collector
 repoClone = pygit2.clone_repository("https://github.com/some-open-solutions/collector",
-                                   "../Collector-update")
+                                    "../Collector-update")
 
 #delete web folder
 shutil.rmtree("web")

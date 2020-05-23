@@ -25,19 +25,21 @@
   vertical-align: middle;
   height: {{image_height}};
   position: absolute;
-  /* transform: translate(-50%, 0); */
+  transform: translate(-50%, 0);
   left: 50%;
   background-repeat: no-repeat;
   background-size: contain;
 }
+#stimuli_fixation{
+  transform: translate(-50%, 0);
+  left: 50%;
+}
 #stimuli_img_left{
-  /* left:  25%; */
-  margin-left: -100px;
-  
+  margin-left: {{left_position}};
 }
 #stimuli_img_right{
   /* left:  75%; */
-  margin-left: 100px;
+  margin-left: {{right_position}};
 }
 </style>
 <body>
@@ -106,6 +108,35 @@
 </body>
 </html>
 <script>
+
+//////////////////////
+// Borcsok variables
+//////////////////////
+
+var image_pair;
+Trial.set_timer(function(){
+  function refuse_height(){
+    bootbox.confirm("Your window height needs to be at least {{min_height}} before starting. Please make your window as big as possible before proceeding.", function(result){
+      if(window.innerHeight < parseFloat("{{min_height}}".replace("px",""))){
+        refuse_height();
+      }
+    });
+  };
+  function refuse_width(){
+    bootbox.confirm("Your window width needs to be at least {{min_width}} before starting. Please make your window as big as possible before proceeding.", function(result){
+      if(window.innerWidth < parseFloat("{{min_width}}".replace("px",""))){
+        refuse_width();
+      }
+    });
+  }
+  if(window.innerHeight < parseFloat("{{min_height}}".replace("px",""))){
+    refuse_height();
+  }
+  if(window.innerWidth <  parseFloat("{{min_width}}".replace("px",""))){
+    refuse_width();
+  }
+},0);
+
 
 //////////////////////
 // default settings //
@@ -682,9 +713,27 @@ function endTrial() {
 
 
 function saveData() {
-    data.push(data_current);
-    data_current = {};
-    sendData();
+  
+  data_current.raw = data_current.raw.map(function(row){
+    row.x = row.x - screen.width/2;
+    row.y = row.y - screen.height/2;
+    
+    if(typeof(image_pair) !== "undefined"){
+      Object.keys(image_pair).forEach(function(key){
+        row[key] = image_pair[key];
+      });
+    }
+    row.screen_width  = screen.width;
+    row.screen_height = screen.height;
+    //row.left_image  = image_pair.image_1;
+    //row.right_image = image_pair.image_2;
+    
+    return row;
+  });
+  
+  data.push(data_current);
+  data_current = {};
+  sendData();
 }
 
 function sendData() {
@@ -708,9 +757,6 @@ function sendData() {
           data[trial_no] = null;
         }
       });
-      
-      
-      
       break;
     case "github":
       data.forEach(function(trial,trial_no){
@@ -727,8 +773,6 @@ function sendData() {
           data[trial_no] = null;
         }
       });
-      
-      
       break;
   }
 }
@@ -951,12 +995,13 @@ $.get(freeview_image_file,function(result){
   }
 });
 
+
 function freeviewStart() {
   
   document.body.style.cursor = 'none';
   
   
-  var image_pair = tFreeview.stimuli.shift();
+  image_pair = tFreeview.stimuli.shift();
   
   [left_image,right_image] = [image_pair.image_1,image_pair.image_2];
   
@@ -964,10 +1009,6 @@ function freeviewStart() {
 
 
   
-  $('#stimuli_fixation').css({
-      'top': '50%',
-      'left': '50%'
-  });
   
   $("#stimuli_img_left").attr("src","../User/"+left_image);
   $("#stimuli_img_right").attr("src","../User/"+right_image)
