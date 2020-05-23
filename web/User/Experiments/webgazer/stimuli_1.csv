@@ -1,4 +1,3 @@
-Cue,Answer,calibrations,freeview_image_file,design_type,calibration_skip,image_height,image_width,save_script,stim_duration,trials,left_side,trial_order,left_position,right_position,min_width,min_height,
-A,Apple,13,freeviewing/freeview_stimuli.csv,freeview,no,300px,400px,https://script.google.com/macros/s/AKfycbzwj1yzprDALwIAP0LFwFD-LeBEb3e9w28YVKj4veWavrjsu55n/exec,2000,20,image_2,random,-231px,231px,1000px,600px,
-B,Banana,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,
+calibrations,freeview_image_file,design_type,calibration_skip,image_height,image_width,save_script,stim_duration,trials,left_side,trial_order,left_position,right_position,min_width,min_height,skip_instruct,
+13,freeviewing/freeview_stimuli.csv,freeview,skip,300px,400px,https://script.google.com/macros/s/AKfycbzwj1yzprDALwIAP0LFwFD-LeBEb3e9w28YVKj4veWavrjsu55n/exec,2000,20,image_2,random,-231px,231px,1000px,600px,on,
+,,,,,,,,,,,,,,,,

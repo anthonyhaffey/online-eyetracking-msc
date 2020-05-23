@@ -31,8 +31,27 @@
   background-size: contain;
 }
 #stimuli_fixation{
+  
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  font-size:100px;
+  text-align:center;
+  height:150px;
+
+  /*
   transform: translate(-50%, 0);
   left: 50%;
+  font-size:100px;
+  vertical-align: middle;
+  /*  
+  left: 50%;
+  object-fit: fill;
+  position: absolute;
+  */
 }
 #stimuli_img_left{
   margin-left: {{left_position}};
@@ -230,7 +249,11 @@ calibration.method = "watch"; // click or watch
 calibration.calibrations = calibrations // how many calibration dots
 calibration.duration = 20; // how often does one position get sampled
 calibration.instruction = 'Please fixate on the dot <br />that will appear. <br /><br />Do not move your head,<br />only use your eyes.';
-calibration.instruction_duration = 5000;
+if("{{skip_instruct}}" == "on"){
+  calibration.instruction_duration = 0;
+} else {
+  calibration.instruction_duration = 5000;
+}
 
 /************************************
  * VALIDATION PARAMETERS
@@ -261,6 +284,11 @@ eyetrack_designs = {
   pursuit: {'type': 'pursuit', 'trials': 24, 'iti': 500, 'instruction': 'A black dot will appear. Please <br />look at it. When it turns <span style="color: #dd494b;">red</span>,<br /> Please follow its movement with your eyes.<br /><br />Do not move your head, <br />only use your eyes.', 'instruction_duration': 7000},
   
 }
+
+if("{{skip_instruct}}" == "on"){
+  eyetrack_designs.freeview.instruction_duration = 0;
+} 
+
 
 design.blocks = [
   eyetrack_designs[["{{design_type}}"]]
