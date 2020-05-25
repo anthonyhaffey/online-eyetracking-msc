@@ -59,7 +59,7 @@ Encryption code/interface
 <script>
 $("#google_script_btn").on("click",function(){
   $.get("Data/Google/CollectorSave.txt",function(google_script){
-    bootbox.alert("//Select and copy the following to a <b>google apps script</b>: <br><br><textarea style='white-space: pre-wrap;'>" + google_script + "</textarea>");
+    bootbox.alert("//Select and copy the following to a <b>google apps script</b>: <br><br><textarea style='white-space: pre-wrap;' onclick='this.focus();this.select()' readonly='readonly'>" + google_script + "</textarea>");
   })
 });
 
