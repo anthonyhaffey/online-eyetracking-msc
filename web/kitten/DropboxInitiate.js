@@ -306,8 +306,7 @@ function new_dropbox_account(dropbox_dialog){
                           initiate_master_json();
                         },
                         function(error){
-                          console.dir("Initial file causing error");
-                          report_error(error);
+                          report_error(error, "Initial master file causing error");
                         },"filesUpload");
 
     });

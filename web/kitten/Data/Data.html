@@ -50,12 +50,19 @@ Encryption code/interface
     <button class="btn btn-primary" id="js_decrypt_btn">Decrypt file(s)</button>
     <input type="file" id="fileToLoad" style="display:none" multiple>
     <button class="btn btn-primary" onclick="encrypt_obj.change_password()">Change password</button>
+    <button class="btn btn-primary" id="google_script_btn">Google Script</button>
   </span>
 </nav>
 
 
 
 <script>
+$("#google_script_btn").on("click",function(){
+  $.get("Data/Google/CollectorSave.txt",function(google_script){
+    bootbox.alert("//Select and copy the following to a <b>google apps script</b>: <br><br><div style='white-space: pre-wrap;'>" + google_script + "</div>");
+  })
+});
+
 $("#js_decrypt_btn").on("click",function(){
   $("#fileToLoad").val("");
   $("#fileToLoad").click();

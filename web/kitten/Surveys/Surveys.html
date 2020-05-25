@@ -263,13 +263,13 @@ function synch_surveys(){
 							});
 						})
 						.catch(function(error){
-							report_error(error);
+              report_error(error, "problem synching the surveys, possibly due to getting the location of a specific survey");
 						});
 				}
 			});
 		})
 		.catch(function(error){
-			report_error(error);
+      report_error(error, "problem synching the surveys, possibly due to listing surveys within the survey folder.");
 		});
 };
 
@@ -299,7 +299,7 @@ $("#delete_survey_btn").on("click",function(){
 					$("#save_btn").click();
 				})
 				.catch(function(error){
-					report_error(error);
+        	report_error(error, "problem deleting the survey.");
 				});
 		}
 	});

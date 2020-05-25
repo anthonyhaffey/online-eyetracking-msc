@@ -156,7 +156,7 @@ function list_experiments(){
           update_exp_list();
         })
         .catch(function(error){
-          report_error(error);
+          report_error(error, "problem listing the experiments");
         });
   } else { //just a sanity check that the user is in fact using a localhost version
     switch(dev_obj.context){
@@ -275,7 +275,7 @@ function synch_experiment(entry_name){
 			});
 		})
 		.catch(function(error){
-			report_error(error);
+			report_error(error,"problem synching the experiment");
 		});
 }
 function update_dropdown_lists(){

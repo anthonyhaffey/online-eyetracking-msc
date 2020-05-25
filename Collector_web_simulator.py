@@ -1,3 +1,6 @@
+index_file = 'kitten/index_dropbox.html'
+import test1
+
 import eel
 import io
 import json
